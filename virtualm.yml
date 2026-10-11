@@ -1,0 +1,38 @@
+---
+- name: Create EC2 
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    region: "us-east-2"
+    instance_type: "t3.micro"
+    ami_id: "ami-0d3d85815a9746bc5"   # Example Amazon Linux 2 AMI
+    key_name: "crom-new"
+    sg_name: "project-sg"
+
+  tasks:
+
+    - name: Create security group
+    # amazon.aws.ec2_security_group is correct module
+      amazon.aws.ec2_group:
+        name: "{{ sg_name }}"
+        description: "Security"
+        region: "{{ region }}"
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+      register: sg
+
+    - name: Create EC2 instance
+      amazon.aws.ec2_instance:
+        name: "first-srv-via-ansible"
+        region: "{{ region }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        key_name: "{{ key_name }}"
+        security_group: "{{ sg.group_id }}"
+        wait: yes
+      register: ec2
+
