@@ -31,7 +31,7 @@
 
     - name: Launch Amazon EC2 Instance
       amazon.aws.ec2_instance:
-        name: "2pm-srv"
+        name: "AD-Server"
         region: "{{ aws_region }}"
         instance_type: "{{ instance_type }}"
         image_id: "{{ ami_id }}"
